@@ -52,3 +52,8 @@ tr {
 #grille{
     margin-bottom: 2em;
 }
+
+#remzero{
+    margin-top: 3em;
+    width: 150px;
+}

@@ -5,9 +5,12 @@ const btHaut = document.getElementById("haut");
 const btBas = document.getElementById("bas");
 const btGauche = document.getElementById("gauche");
 const btDroite = document.getElementById("droite");
+const btremzero= document.getElementById("remzero")
 var affs=document.getElementById("affScore")
 
-let tableau_position=[-25,-1,1,25]
+
+
+let table_monstrer=[]
 
 for (let i = 0; i < 15; i++) {
   var ligne = document.createElement("tr");
@@ -76,7 +79,7 @@ function jeu(jeux) {
 
   let compteur2 = 0;
 
-  while (compteur2 < 5) {
+  while (compteur2 < 3) {
     numAleatoire = Math.floor(Math.random() * jeux.length);
     let j = jeux[numAleatoire];
     var cellules = document.querySelectorAll(".colone_tableau");
@@ -85,8 +88,10 @@ function jeu(jeux) {
       image.src = './img/monster.png';
       cellules[j].appendChild(image);
       numMonster.push(j)
+      table_monstrer.push([compteur2,j])
+      
       compteur2++
-      console.log("monster " + j);
+      console.log("monster " + (compteur2+1)+ " " + j);
     }
   }
 
@@ -143,27 +148,26 @@ function haut() {
     var image = document.createElement('img');
     image.src = './img/joueur.png';
     image.classList.add("joueur");
-    if(numTresor.includes(position)){
-        cellules[position].querySelector("img").remove()
-        scorre=scorre+1
-        let index= numTresor.indexOf(position)
-        numTresor.splice(index,1)
-        
-      }
+    
     cellules[position].appendChild(image);
     cellules[position+25].querySelector("img").remove()
     joueur=[position]
+    if(numTresor.includes(position)){
+      cellules[position].querySelector("img").remove()
+      
+      let index= numTresor.indexOf(position)
+      numTresor.splice(index,1)
+      scorre=scorre+1
+      
+    }
   }
   else{position=position+ 25}
   affs.textContent=scorre
+  gagner();
 
-  /*while(true){
-    numAleatoire=Math.floor(Ma.random()*40)
-    let a=tableau_position[numAleatoire]
-
-  }*/
+  }
   
-}
+
 
 
 function bas() {
@@ -174,20 +178,24 @@ function bas() {
       var image = document.createElement('img');
       image.src = './img/joueur.png';
       image.classList.add("joueur");
-      if(numTresor.includes(position)){
-        cellules[position].querySelector("img").remove()
-        scorre=scorre+1
-        let index= numTresor.indexOf(position)
-        numTresor.splice(index,1)
-        
-      }
+      
       cellules[position].appendChild(image);
       cellules[position-25].querySelector("img").remove()
       joueur=[position]
+      if(numTresor.includes(position)){
+        cellules[position].querySelector("img").remove()
+        
+        let index= numTresor.indexOf(position)
+        numTresor.splice(index,1)
+        scorre=scorre+1
+        
+      }
       
     }
     else{position=position- 25}
     affs.textContent=scorre
+
+    gagner();
     
 }
 
@@ -199,21 +207,26 @@ function gauche() {
       var image = document.createElement('img');
       image.src = './img/joueur.png';
       image.classList.add("joueur");
-      if(numTresor.includes(position)){
-        cellules[position].querySelector("img").remove()
-        scorre=scorre+1
-        let index= numTresor.indexOf(position)
-        numTresor.splice(index,1)
-        
-      }
+      
       cellules[position].appendChild(image);
       cellules[position+1].querySelector("img").remove()
       joueur=[position]
 
       console.log(scorre)
+
+      if(numTresor.includes(position)){
+        cellules[position].querySelector("img").remove()
+        
+        let index= numTresor.indexOf(position)
+        numTresor.splice(index,1)
+        scorre=scorre+1
+        
+      }
     }
     else{position=position+ 1}
     affs.textContent=scorre
+    gagner();
+
 }  
 
   function droite() {
@@ -224,21 +237,23 @@ function gauche() {
       var image = document.createElement('img');
       image.src = './img/joueur.png';
       image.classList.add("joueur");
-      if(numTresor.includes(position)){
-        cellules[position].querySelector("img").remove()
-        scorre=scorre+1
-        let index= numTresor.indexOf(position)
-        numTresor.splice(index,1)
-        
-      }
+      
       
       cellules[position].appendChild(image);
       cellules[position-1].querySelector("img").remove()
       joueur=[position]
+      if(numTresor.includes(position)){
+        cellules[position].querySelector("img").remove()
+        
+        let index= numTresor.indexOf(position)
+        numTresor.splice(index,1)
+        scorre=scorre+1
+        
+      }
     }
     else{position=position- 1}
     affs.textContent=scorre
-    
+    gagner();
 
 }
 
@@ -249,25 +264,184 @@ function gagner(){
       }
 }
 
+let tableau_position=[-25,-1,1,25]
 
-btHaut.addEventListener("click", haut);
-btBas.addEventListener("click",bas);
-btDroite.addEventListener("click",droite);
-btGauche.addEventListener("click",gauche);
+function deplacementMonstre(){
+
+    
+    
+    
+    
+    for (let i=0;i<numMonster.length;i++){
+      var cellules = document.querySelectorAll(".colone_tableau");
+    var image = document.createElement('img');
+    image.src = './img/monster.png';
+        while(true){
+        numAleatoire=Math.floor(Math.random()*4)
+        let a=tableau_position[numAleatoire]
+        let h = table_monstrer[i][0]
+        let l = numMonster[i]
+        console.log("voir: "+l)
+        if (a==-1){
+        if(!numTresor.includes(l+a)&&jeux.includes(l+a)&&!numMonster.includes(l+a)){
+            cellules[l+a].appendChild(image);
+            numMonster[i]=l+a
+
+            cellules[l].querySelector("img").remove()
+            console.log("apres deplacement du monstre :" + (i+1)+ " sa position est devenue: "+table_monstrer[i][1])
+            if(joueur==l+a){
+                alert("perdu")
+                window.location.reload(true);
+                
+            }
+            break;
+
+        }}
+        else if (a==1){
+          if(!numTresor.includes(l+a)&&jeux.includes(l+a)&&!numMonster.includes(l+a)){
+            cellules[l+a].appendChild(image);
+            numMonster[i]=l+a
+            cellules[l].querySelector("img").remove()
+            console.log("apres deplacement du monstre :" + (i+1)+ " sa position est devenue: "+table_monstrer[i][1])
+            if(joueur==l+a){
+                alert("perdu")
+                window.location.reload(true);
+                
+            }
+            break;
+
+        }
+          
+        }
+        else if(a==-25){
+
+          if(!numTresor.includes(l+a)&&jeux.includes(l+a)&&!numMonster.includes(l+a)){
+            cellules[l+a].appendChild(image);
+            numMonster[i]=l+a
+            cellules[l].querySelector("img").remove()
+            console.log("apres deplacement du monstre :" + (i+1)+ " sa position est devenue: "+table_monstrer[i][1])
+            if(joueur==l+a){
+                alert("perdu")
+                window.location.reload(true);
+                
+            }
+            break;
+
+        }
+
+
+        }
+        else if(a==25){
+
+          if(!numTresor.includes(l+a)&&jeux.includes(l+a)&&!numMonster.includes(l+a)){
+            cellules[l+a].appendChild(image);
+            numMonster[i]=l+a
+            cellules[l].querySelector("img").remove()
+            
+            console.log("apres deplacement du monstre :" + (i+1)+ " sa position est devenue: "+table_monstrer[i][1])
+            if(joueur==l+a){
+                alert("perdu")
+                window.location.reload(true);
+                
+            }
+            break;
+
+        }
+
+
+        }
+
+        }
+    
+        console.log("boucle: "+(i+1))
+    }
+
+
+
+
+}
+
+
+btHaut.addEventListener("click", function(){haut(), deplacementMonstre()});
+btBas.addEventListener("click",function(){bas(), deplacementMonstre()});
+btDroite.addEventListener("click",function(){droite(), deplacementMonstre()});
+btGauche.addEventListener("click",function(){gauche(), deplacementMonstre()});
+btremzero.addEventListener("click",function(){window.location.reload(true);
+
+})
 
 
 document.addEventListener("keydown", function(event){
     if(event.key==='ArrowUp'){
         haut();
+        deplacementMonstre();
+        
     }
     else if (event.key === 'ArrowDown') {
         bas();
+        deplacementMonstre();
       } else if (event.key === 'ArrowLeft') {
         gauche();
+        deplacementMonstre();
       } else if (event.key === 'ArrowRight') {
         droite();
+        deplacementMonstre();
       }
 
-});
+      console.log("***************************************************")
+    });
 
 affs.textContent=scorre;
+
+// function deplacementMonstre() {
+//   var cellules = document.querySelectorAll(".colone_tableau");
+//   var image = document.createElement('img');
+//   image.src = './img/monster.png';
+
+//   // Nouveau tableau pour stocker les nouvelles coordonnées des monstres après un déplacement
+//   var new_table_monstrer = [];
+
+//   for (let i = 0; i < table_monstrer.length; i++) {
+//     let h = table_monstrer[i][0];
+//     let l = table_monstrer[i][1];
+
+//     // Tableau des déplacements possibles : [-25, -1, 1, 25] (haut, gauche, droite, bas)
+//     let tableau_deplacements = [-25, -1, 1, 25];
+
+//     // Filtrer les déplacements valides en fonction de la position actuelle du monstre
+//     let deplacements_valides = tableau_deplacements.filter(deplacement => {
+//       let nouvellePosition = l + deplacement;
+//       return jeux.includes(nouvellePosition) && !numMonster.includes(nouvellePosition);
+//     });
+
+//     // Vérifier s'il y a des déplacements valides possibles pour le monstre
+//     if (deplacements_valides.length > 0) {
+//       // Choisir aléatoirement un déplacement valide parmi les possibilités
+//       let directionAleatoire = Math.floor(Math.random() * deplacements_valides.length);
+//       let deplacementChoisi = deplacements_valides[directionAleatoire];
+
+//       // Nouvelles coordonnées du monstre après le déplacement
+//       let nouvellePosition = l + deplacementChoisi;
+
+//       // Supprimer le monstre de sa position actuelle, s'il y a une image à supprimer
+//       let imageASupprimer = cellules[l].querySelector("img");
+//       if (imageASupprimer) {
+//         cellules[l].removeChild(imageASupprimer);
+//       }
+
+//       // Déplacer le monstre dans la nouvelle position
+//       cellules[nouvellePosition].appendChild(image);
+
+//       // Mettre à jour les coordonnées du monstre dans le nouveau tableau
+//       new_table_monstrer.push([h, nouvellePosition]);
+//     } else {
+//       // Si aucun déplacement valide n'est possible, le monstre reste à sa position actuelle
+//       new_table_monstrer.push([h, l]);
+//     }
+//   }
+
+//   // Remplacer l'ancien tableau par le nouveau tableau de coordonnées des monstres
+//   table_monstrer = new_table_monstrer;
+// }
+
+
